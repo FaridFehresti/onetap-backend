@@ -32,6 +32,7 @@ Route::post('contact_us',[ContactController::class,'store']);
 
 
 
+
 Route::post('forget/password', [AuthController::class, 'forgetPassword']);
 Route::post('/verify/otp', [AuthController::class, 'checkotp']);
 Route::post('/password/update', [AuthController::class, 'passwordUpdate']);
@@ -51,13 +52,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/action/edit', [ActionController::class, 'edit']);
     Route::get('/taps/ditails/{id}', [QrcodeController::class, 'tapsData']);
     Route::get('/contact/get/{id}', [ContactController::class, 'contactShow']);
-   
+
 
 
     Route::get('/user/card', [UserController::class, 'index']);
     Route::post('/user/card/status', [UserController::class, 'status']);
 
- 
+
 
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'index']);
