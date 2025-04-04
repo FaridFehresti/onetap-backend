@@ -2,82 +2,123 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helper\ImageHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Brandlogo;
-use App\Models\C_M_S;
-use App\Models\Features;
-use App\Models\Review;
-use App\Traits\apiresponse;
+use App\Http\Requests\CreateCardRequest;
+use App\Http\Requests\UpdateCardRequest;
+use App\Models\Card;
+use App\Models\CardColor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
-class CMSController extends Controller
+class CardController extends Controller
 {
-    use apiresponse;
-    public function index(Request $request)
+    public function index(): JsonResponse
     {
+        $cards = Card::where('status', 'active')
+            ->orderBy('id', 'desc')
+            ->with('colors')
+            ->get();
 
-        // Query the CMS model to fetch all records
-        $cmsData = C_M_S::all();  // Fetch all data, no filtering by 'type'
+        return response()->json(['success' => true, 'message' => 'Data fetched', 'data' => $cards]);
+    }
 
-        if ($cmsData->isEmpty()) {
-            return $this->error([], 'No data found', 404);
-        }
+    public function store(CreateCardRequest $request): JsonResponse
+    {
+        $imagePath = $request->hasFile('image')
+            ? ImageHelper::handleImageUpload($request->file('image'), null, 'card')
+            : null;
 
-        // Prepare the response grouped by type
-        $response = [];
+        $lastCard = Card::orderBy('id', 'desc')->first();
+        $nextSerial = $lastCard ? intval(substr($lastCard->code, 5)) + 1 : 1;
+        $code = 'CARD-' . str_pad($nextSerial, 4, '0', STR_PAD_LEFT);
 
-        foreach ($cmsData as $data) {
-            if (!isset($response[$data->type])) {
-                $response[$data->type] = [];
+        $card = Card::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'image' => $imagePath,
+            'code' => $code,
+            'status' => 'active'
+        ]);
+
+        if ($request->has('color') && is_array($request->color)) {
+            foreach ($request->color as $color) {
+                CardColor::create(['card_id' => $card->id, 'name' => $color]);
             }
-            $response[$data->type][] = [
-                'id' => $data->id,
-                'type' => $data->type,
-                'title' => $data->title,
-                'hilight_title' => $data->hilight_title,
-                'descriptions' => $data->descriptions,
-                'image' => $data->image,
-                'first_image' => $data->first_image,
-                'first_title' => $data->first_title,
-                'first_desc' => $data->first_desc,
-                'second_image' => $data->second_image,
-                'second_title' => $data->second_title,
-                'second_desc' => $data->second_desc,
-                'third_image' => $data->third_image,
-                'third_title' => $data->third_title,
-                'third_desc' => $data->third_desc,
-                'created_at' => $data->created_at,
-                'updated_at' => $data->updated_at,
-            ];
         }
+
+        return response()->json(['success' => true, 'message' => 'Card created successfully!', 'data' => $card], 201);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $card = Card::with('colors')->find($id);
+        if (!$card) {
+            return response()->json(['success' => false, 'message' => 'Card not found'], 404);
+        }
+        return response()->json(['success' => true, 'data' => $card]);
+    }
+
+    public function update($id, UpdateCardRequest $request): JsonResponse
+    {
+        $card = Card::findOrFail($id);
+        $card->name = $request->name;
+        $card->price = $request->price;
+
+        if ($request->hasFile('image')) {
+            if ($card->image) {
+                \Storage::delete($card->image);
+            }
+            $card->image = ImageHelper::handleImageUpload($request->file('image'), null, 'card');
+        }
+
+        $card->save();
+        $card->colors()->delete();
+
+        if ($request->has('color') && is_array($request->color)) {
+            foreach ($request->color as $color) {
+                CardColor::create(['card_id' => $card->id, 'name' => $color]);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Card updated successfully!', 'data' => $card]);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        try {
+            $card = Card::find($id);
+            if (!$card) {
+                return response()->json(['success' => false, 'message' => 'Card not found'], 404);
+            }
+
+            if ($card->image) {
+                \Storage::delete($card->image);
+            }
+
+            $card->colors()->delete();
+            $card->delete();
+
+            return response()->json(['success' => true, 'message' => 'Card deleted successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Something went wrong!', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function status($id): JsonResponse
+    {
+        $card = Card::find($id);
+        if (!$card) {
+            return response()->json(['success' => false, 'message' => 'Card not found'], 404);
+        }
+
+        $card->status = $card->status === 'active' ? 'inactive' : 'active';
+        $card->save();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Data fetched successfully',
-            'data' => $response,
-            'code' => 200
-        ], 200);
+            'success' => true,
+            'message' => $card->status === 'active' ? 'Published Successfully.' : 'Unpublished Successfully.',
+            'data' => $card,
+        ]);
     }
-
-
-    public function feature()
-    {
-        $data = Features::where('status', 'active')->orderBy('id', 'desc')->limit(6)->get();
-        return $this->success($data, 'Data fetch success', 200);
-    }
-
-    public function review()
-    {
-        $data = Review::where('status', 'Active')->with('user')->orderBy('id', 'desc')->limit(6)->get();
-        return $this->success($data, 'Data fetch success', 200);
-    }
-
-    public function brand()
-    {
-        $data = Brandlogo::where('status', 'Active')->orderBy('id', 'desc')->limit(5)->get();
-        return $this->success($data, 'Data fetch success', 200);
-    }
-
-
 }

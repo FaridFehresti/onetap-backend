@@ -87,7 +87,7 @@ class UserController extends Controller
         foreach ($orders as $order) {
             $orderItem = $order->items()->where('id', $order_item_id)->first();
             if ($orderItem) {
-                break; 
+                break;
             }
         }
 

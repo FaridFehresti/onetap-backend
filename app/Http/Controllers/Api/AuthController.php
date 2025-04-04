@@ -35,7 +35,8 @@ class AuthController extends Controller
 
     //     return response()->json(['message' => 'Data saved successfully', 'data' => $cms]);
     // }
-    //register functions
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -52,17 +53,17 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Create a new user
+
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
 
-        // Generate token
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Check if cart data exists in the request
+
         if ($request->has('cart') && is_array($request->cart)) {
             $cart = Cart::firstOrCreate(
                 ['user_id' => $user->id],
@@ -83,7 +84,6 @@ class AuthController extends Controller
             }
         }
 
-        // Successful response
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -91,7 +91,8 @@ class AuthController extends Controller
         ]);
     }
 
-    //login functions
+
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -107,18 +108,18 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Attempt to find the user by email
+
         $user = User::where('email', $request->input('email'))->first();
 
-        // Check if user exists and password is correct
+
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             return $this->error([], 'Invalid credentials', 401);
         }
 
-        // Generate token
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Check if cart data is coming from the request
+
         if ($request->has('cart') && is_array($request->cart)) {
             $cart = Cart::firstOrCreate(
                 ['user_id' => $user->id],
@@ -139,7 +140,6 @@ class AuthController extends Controller
             }
         }
 
-        // Return response with the user and token
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -148,7 +148,7 @@ class AuthController extends Controller
     }
 
 
-    //check finction
+
     public function check(Request $request)
     {
         $user = $request->user();
@@ -255,18 +255,20 @@ class AuthController extends Controller
                     'message' => 'Failed to save OTP. Please try again.',
                 ], 500);
             }
-            $user->save();
 
-            // Send OTP Email
             try {
                 Mail::to($user->email)->send(new OtpMail($otp));
+
+                // If email sent successfully, commit transaction
+                DB::commit();
+
                 return response()->json([
                     'status' => true,
                     'message' => 'OTP sent successfully',
-                    'otp' => $user->otp, // Remove this in production for security
+                    'otp' => $otp, // ✅ نمایش OTP (فقط برای تست)
                 ], 200);
             } catch (\Exception $mailException) {
-                dd('Mail Error: ' . $mailException->getMessage());
+                Log::error('Mail Error: ' . $mailException->getMessage());
                 DB::rollback();
                 return response()->json([
                     'status' => false,
@@ -282,6 +284,8 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+
 
     public function passwordUpdate(PasswordUpdateRequest $request)
     {
@@ -331,7 +335,6 @@ class AuthController extends Controller
     //logout functions
     public function logout(Request $request)
     {
-        // Revoke the token that was used to authenticate the current request
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -341,15 +344,12 @@ class AuthController extends Controller
     }
 
 
-    //Account Delete functions
     public function deleteAccount(Request $request)
     {
         $user = $request->user();
 
-        // Revoke all tokens before deleting the account
         $user->tokens()->delete();
 
-        // Delete the user account
         $user->delete();
 
         return response()->json([
