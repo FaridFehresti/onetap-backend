@@ -10,6 +10,7 @@ use App\Http\Requests\PasswordUpdateRequest;
 use App\Mail\OtpMail;
 use App\Models\C_M_S;
 use App\Models\Cart;
+use App\Models\SecretToken;
 use App\Models\Subscription;
 use App\Models\CartItems;
 use App\Models\User;
@@ -24,6 +25,51 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     use apiresponse;
+
+    public function loginWithSecretToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'secret_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+        $secretToken = SecretToken::where('token', $request->input('secret_token'))->first();
+
+        if (!$secretToken) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid secret token',
+            ], 401);
+        }
+
+
+        $user = User::find($secretToken->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found',
+            ], 404);
+        }
+
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'user' => $user,
+            'token' => $token,
+            'message' => 'Login successful',
+        ]);
+    }
 
     // public function test(Request $request)
     // {
@@ -268,7 +314,6 @@ class AuthController extends Controller
                     'otp' => $otp, // ✅ نمایش OTP (فقط برای تست)
                 ], 200);
             } catch (\Exception $mailException) {
-                Log::error('Mail Error: ' . $mailException->getMessage());
                 DB::rollback();
                 return response()->json([
                     'status' => false,
@@ -276,7 +321,6 @@ class AuthController extends Controller
                 ], 500);
             }
         } catch (\Exception $e) {
-            Log::error('General Error: ' . $e->getMessage());
             DB::rollback();
             return response()->json([
                 'status' => false,
@@ -323,7 +367,6 @@ class AuthController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error($e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong. Please try again.',

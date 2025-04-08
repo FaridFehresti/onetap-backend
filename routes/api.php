@@ -5,13 +5,14 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
-use App\Http\Controllers\Api\CMSController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\SecretTokenController;
+use App\Http\Controllers\Web\Backend\CMSController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login_with_secret_token', [AuthController::class, 'loginWithSecretToken']);
+
 
 // Cms Route
 Route::post('/cms', [CMSController::class, 'index']);
@@ -71,6 +74,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/subscription/{type}', [SubscriptionController::class, 'createSubscriptionSession'])->name('checkout.subscriptions');
 
 
+    Route::prefix('tokens')->group(function () {
+        Route::post('/generate', [SecretTokenController::class, 'generateSecretToken']);
+        Route::get('/', [SecretTokenController::class, 'getSecretToken']);
+        Route::delete('/', [SecretTokenController::class, 'deleteSecretToken']);
+        Route::put('/regenerate', [SecretTokenController::class, 'regenerateSecretToken']);
+    });
 
 });
 
