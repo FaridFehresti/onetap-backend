@@ -6,13 +6,14 @@ use App\Http\Controllers\BrandlogoController;
 use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
-use App\Http\Controllers\Api\ContactController;
-use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\ColorController;
+use App\Http\Controllers\EmailController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\FooterExploreController;
 use App\Http\Controllers\FooterMediaController;
 use App\Http\Controllers\FooterResourceController;
@@ -40,7 +41,7 @@ Route::post('/cms', [CMSController::class, 'index']);
 Route::get('/cms/feature', [CMSController::class, 'feature']);
 Route::get('cms/review', [CMSController::class, 'review']);
 Route::get('cms/brand', [CMSController::class, 'brand']);
-Route::get('faq/all',[FaqController::class,'index']);
+//Route::get('faq/all',[FaqController::class,'index']);
 Route::post('contact_us',[ContactController::class,'store']);
 
 
@@ -180,6 +181,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{footerMedia}', [FooterMediaController::class, 'update'])->name('update');
         Route::delete('/{footerMedia}', [FooterMediaController::class, 'destroy'])->name('destroy');
     });
+
+
+    Route::prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/', [FaqController::class, 'index'])->name('index');
+        Route::get('/all', [FaqController::class, 'activefaq'])->name('listAll');
+        Route::post('/', [FaqController::class, 'store'])->name('store');
+        Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
+        Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::prefix('contact_us')->name('contact_us.')->group(function () {
+        Route::get('/', [ContactController::class, 'index'])->name('index');
+        Route::post('/', [ContactController::class, 'store'])->name('store');
+        Route::get('/{contact}', [ContactController::class, 'show'])->name('show');
+        Route::put('/{contact}', [ContactController::class, 'update'])->name('update');
+        Route::delete('/{contact}', [ContactController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::post('/send_email', [EmailController::class, 'store'])->name('sendEmail');
 
 });
 

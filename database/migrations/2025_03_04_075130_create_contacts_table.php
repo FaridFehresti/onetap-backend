@@ -13,20 +13,10 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('order_item_id'); 
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->string('company_name')->nullable();
-            $table->string('job_title')->nullable();
-            $table->string('industry')->nullable();
-            $table->string('birthday')->nullable();
-            $table->string('phone_home')->nullable();
-            $table->string('phone_office')->nullable();
-            $table->string('email')->nullable();
-            $table->string('website')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('email');
             $table->longText('address')->nullable();
             $table->timestamps();
-            $table->foreign('order_item_id')->references('id')->on('order_items')->onDelete('cascade');
         });
     }
 

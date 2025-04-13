@@ -31,13 +31,13 @@ class ContactController extends Controller
             ], 422);
         }
 
-        // Send the email to the admin
-        // Mail::to('mdrobinhosan57@gmail.com')->send(new Contact(
-        //     $request->first_name,
-        //     $request->last_name,
-        //     $request->email,
-        //     $request->message
-        // ));
+
+         Mail::to('mdrobinhosan57@gmail.com')->send(new Contact(
+             $request->first_name,
+             $request->last_name,
+             $request->email,
+             $request->message
+         ));
 
         return $this->success([], 'Your message has been sent successfully!', 200);
     }
