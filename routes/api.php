@@ -19,6 +19,8 @@ use App\Http\Controllers\FooterMediaController;
 use App\Http\Controllers\FooterResourceController;
 use App\Http\Controllers\GoGreenController;
 use App\Http\Controllers\HeroController;
+use App\Http\Controllers\MyCardController;
+use App\Http\Controllers\MyCardLinkController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SecondFeatureController;
 use App\Http\Controllers\SecretTokenController;
@@ -201,8 +203,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{contact}', [ContactController::class, 'destroy'])->name('destroy');
     });
 
-
     Route::post('/send_email', [EmailController::class, 'store'])->name('sendEmail');
+
+
+    Route::prefix('my_cards')->name('my_cards.')->group(function () {
+        Route::get('/', [MyCardController::class, 'index'])->name('index');
+        Route::post('/', [MyCardController::class, 'store'])->name('store');
+        Route::get('/{myCard}', [MyCardController::class, 'show'])->name('show');
+        Route::put('/{myCard}', [MyCardController::class, 'update'])->name('update');
+        Route::delete('/{myCard}', [MyCardController::class, 'destroy'])->name('destroy');
+        Route::get('/active_link/{uuid}', [MyCardController::class, 'getActiveLinkByUuid'])->name('activeLink');
+    });
+
+    Route::prefix('my_card_links')->name('my_card_links.')->group(function () {
+        Route::get('/', [MyCardLinkController::class, 'index'])->name('index');
+        Route::post('/', [MyCardLinkController::class, 'store'])->name('store');
+        Route::get('/{myCardLink}', [MyCardLinkController::class, 'show'])->name('show');
+        Route::put('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
+        Route::delete('/{myCardLink}', [MyCardLinkController::class, 'destroy'])->name('destroy');
+    });
 
 });
 
