@@ -6,13 +6,14 @@ use App\Models\MyCard;
 use App\Models\MyCardLink;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MyCardController extends Controller
 {
     public function index()
     {
-        $cards = MyCard::with('links')->get();
+        $cards = MyCard::get();
 
         return response()->json([
             'status' => 'success',
@@ -22,8 +23,6 @@ class MyCardController extends Controller
 
     public function show(MyCard $myCard)
     {
-        $myCard->load('links');
-
         return response()->json([
             'status' => 'success',
             'data' => $myCard,
@@ -43,10 +42,14 @@ class MyCardController extends Controller
             'company_number' => 'nullable|string',
             'postal_code' => 'nullable|integer',
             'color' => 'nullable|string',
-            'avatar' => 'nullable|string',
+            'avatar'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:active,inactive',
             'user_id' => 'required|exists:users,id',
         ]);
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $data['uuid'] = Str::uuid();
 
@@ -71,10 +74,17 @@ class MyCardController extends Controller
             'company_number' => 'nullable|string',
             'postal_code' => 'nullable|integer',
             'color' => 'nullable|string',
-            'avatar' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:active,inactive',
             'user_id' => 'required|exists:users,id',
         ]);
+
+        if ($request->hasFile('avatar')) {
+            if ($myCard->avatar) {
+                Storage::disk('public')->delete($myCard->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $myCard->update($data);
 
@@ -84,44 +94,45 @@ class MyCardController extends Controller
         ]);
     }
 
-    public function destroy(MyCard $myCard)
-    {
-        $myCard->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Card deleted successfully.',
-        ]);
-    }
+    function destroy(MyCard $myCard)
+        {
+            $myCard->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Card deleted successfully.',
+            ]);
+        }
 
 
-    public function getActiveLinkByUuid($uuid)
-    {
-        try {
-            $card = MyCard::where('uuid', $uuid)->firstOrFail();
+        public function getActiveLinkByUuid($uuid)
+        {
+            try {
+                $card = MyCard::where('uuid', $uuid)->firstOrFail();
 
-            $activeLink = MyCardLink::where('card_id', $card->id)
-                ->where('status', 'active')
-                ->first();
+                $activeLink = MyCardLink::where('card_id', $card->id)
+                    ->where('status', 'active')
+                    ->first();
 
-            if ($activeLink) {
+                if ($activeLink) {
+                    return response()->json([
+                        'status' => 'success',
+                        'data' => $activeLink->link,
+                    ]);
+                }
+
                 return response()->json([
-                    'status' => 'success',
-                    'data' => $activeLink->link,
-                ]);
+                    'status' => 'error',
+                    'message' => 'No active link found for this card.',
+                ], 404);
+
+            } catch (ModelNotFoundException $e) {
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Card not found with this UUID.',
+                ], 404);
             }
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'No active link found for this card.',
-            ], 404);
-
-        } catch (ModelNotFoundException $e) {
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Card not found with this UUID.',
-            ], 404);
         }
     }
-}

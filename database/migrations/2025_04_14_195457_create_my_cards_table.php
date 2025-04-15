@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->uuid('uuid')->unique();
+            $table->uuid('uuid')->unique()->nullable();
             $table->timestamps();
         });
 

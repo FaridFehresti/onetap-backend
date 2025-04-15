@@ -29,7 +29,7 @@ class MyCard extends Model
 
     public function links()
     {
-        return $this->hasMany(MyCardLink::class, 'card_id');
+        return $this->hasMany(MyCardLink::class, 'card_id', 'id');
     }
 
     public function user()

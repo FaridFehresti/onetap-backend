@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('link');
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->foreignId('card')->constrained('my_cards')->cascadeOnDelete();
+            $table->foreignId('card_id')->constrained('my_cards')->cascadeOnDelete();
             $table->timestamps();
         });
     }
