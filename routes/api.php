@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [HeroController::class, 'index'])->name('heroes.index');
         Route::post('/', [HeroController::class, 'store'])->name('heroes.store');
         Route::get('/{hero}', [HeroController::class, 'show'])->name('heroes.show');
-        Route::put('/{hero}', [HeroController::class, 'update'])->name('heroes.update');
+        Route::post('/{hero}', [HeroController::class, 'update'])->name('heroes.update');
         Route::delete('/{hero}', [HeroController::class, 'destroy'])->name('heroes.destroy');
 
     });
@@ -107,7 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [SecondFeatureController::class, 'index'])->name('second_features.index');
         Route::post('/', [SecondFeatureController::class, 'store'])->name('second_features.store');
         Route::get('/{secondFeature}', [SecondFeatureController::class, 'show'])->name('second_features.show');
-        Route::put('/{secondFeature}', [SecondFeatureController::class, 'update'])->name('second_features.update');
+        Route::post('/{secondFeature}', [SecondFeatureController::class, 'update'])->name('second_features.update');
         Route::delete('/{secondFeature}', [SecondFeatureController::class, 'destroy'])->name('second_features.destroy');
     });
 
@@ -115,7 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [ColorController::class, 'index'])->name('colors.index');
         Route::post('/', [ColorController::class, 'store'])->name('colors.store');
         Route::get('/{color}', [ColorController::class, 'show'])->name('colors.show');
-        Route::put('/', [ColorController::class, 'update'])->name('colors.update');
+        Route::post('/', [ColorController::class, 'update'])->name('colors.update');
         Route::delete('/{color}', [ColorController::class, 'destroy'])->name('colors.destroy');
     });
 
@@ -125,7 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [BrandlogoController::class, 'index'])->name('index');
         Route::post('/', [BrandlogoController::class, 'store'])->name('store');
         Route::get('/{brandlogo}', [BrandlogoController::class, 'show'])->name('show');
-        Route::put('/{brandlogo}', [BrandlogoController::class, 'update'])->name('update');
+        Route::post('/{brandlogo}', [BrandlogoController::class, 'update'])->name('update');
         Route::delete('/{brandlogo}', [BrandlogoController::class, 'destroy'])->name('destroy');
         Route::post('/status/{brandlogo}', [BrandlogoController::class, 'status'])->name('status');
     });
@@ -135,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PlanController::class, 'index'])->name('index');
         Route::post('/', [PlanController::class, 'store'])->name('store');
         Route::get('/{plan}', [PlanController::class, 'show'])->name('show');
-        Route::put('/{plan}', [PlanController::class, 'update'])->name('update');
+        Route::post('/{plan}', [PlanController::class, 'update'])->name('update');
         Route::delete('/{plan}', [PlanController::class, 'destroy'])->name('destroy');
     });
 
@@ -145,7 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [GoGreenController::class, 'index'])->name('index');
         Route::post('/', [GoGreenController::class, 'store'])->name('store');
         Route::get('/{goGreen}', [GoGreenController::class, 'show'])->name('show');
-        Route::put('/{goGreen}', [GoGreenController::class, 'update'])->name('update');
+        Route::post('/{goGreen}', [GoGreenController::class, 'update'])->name('update');
         Route::delete('/{goGreen}', [GoGreenController::class, 'destroy'])->name('destroy');
     });
 
@@ -154,7 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [StepController::class, 'index'])->name('index');
         Route::post('/', [StepController::class, 'store'])->name('store');
         Route::get('/{step}', [StepController::class, 'show'])->name('show');
-        Route::put('/{step}', [StepController::class, 'update'])->name('update');
+        Route::post('/{step}', [StepController::class, 'update'])->name('update');
         Route::delete('/{step}', [StepController::class, 'destroy'])->name('destroy');
     });
 
@@ -164,7 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [FooterExploreController::class, 'index'])->name('index');
         Route::post('/', [FooterExploreController::class, 'store'])->name('store');
         Route::get('/{footerExplore}', [FooterExploreController::class, 'show'])->name('show');
-        Route::put('/{footerExplore}', [FooterExploreController::class, 'update'])->name('update');
+        Route::post('/{footerExplore}', [FooterExploreController::class, 'update'])->name('update');
         Route::delete('/{footerExplore}', [FooterExploreController::class, 'destroy'])->name('destroy');
     });
 
@@ -172,7 +172,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [FooterResourceController::class, 'index'])->name('index');
         Route::post('/', [FooterResourceController::class, 'store'])->name('store');
         Route::get('/{footerResource}', [FooterResourceController::class, 'show'])->name('show');
-        Route::put('/{footerResource}', [FooterResourceController::class, 'update'])->name('update');
+        Route::post('/{footerResource}', [FooterResourceController::class, 'update'])->name('update');
         Route::delete('/{footerResource}', [FooterResourceController::class, 'destroy'])->name('destroy');
     });
 
@@ -180,7 +180,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [FooterMediaController::class, 'index'])->name('index');
         Route::post('/', [FooterMediaController::class, 'store'])->name('store');
         Route::get('/{footerMedia}', [FooterMediaController::class, 'show'])->name('show');
-        Route::put('/{footerMedia}', [FooterMediaController::class, 'update'])->name('update');
+        Route::post('/{footerMedia}', [FooterMediaController::class, 'update'])->name('update');
         Route::delete('/{footerMedia}', [FooterMediaController::class, 'destroy'])->name('destroy');
     });
 
@@ -190,7 +190,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/all', [FaqController::class, 'activefaq'])->name('listAll');
         Route::post('/', [FaqController::class, 'store'])->name('store');
         Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
-        Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
+        Route::post('/{faq}', [FaqController::class, 'update'])->name('update');
         Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
     });
 
@@ -199,7 +199,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [ContactController::class, 'index'])->name('index');
         Route::post('/', [ContactController::class, 'store'])->name('store');
         Route::get('/{contact}', [ContactController::class, 'show'])->name('show');
-        Route::put('/{contact}', [ContactController::class, 'update'])->name('update');
+        Route::post('/{contact}', [ContactController::class, 'update'])->name('update');
         Route::delete('/{contact}', [ContactController::class, 'destroy'])->name('destroy');
     });
 
@@ -210,7 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [MyCardController::class, 'index'])->name('index');
         Route::post('/', [MyCardController::class, 'store'])->name('store');
         Route::get('/{myCard}', [MyCardController::class, 'show'])->name('show');
-        Route::put('/{myCard}', [MyCardController::class, 'update'])->name('update');
+        Route::post('/{myCard}', [MyCardController::class, 'update'])->name('update');
         Route::delete('/{myCard}', [MyCardController::class, 'destroy'])->name('destroy');
         Route::get('/active_link/{uuid}', [MyCardController::class, 'getActiveLinkByUuid'])->name('activeLink');
     });
@@ -219,7 +219,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [MyCardLinkController::class, 'index'])->name('index');
         Route::post('/', [MyCardLinkController::class, 'store'])->name('store');
         Route::get('/{myCardLink}', [MyCardLinkController::class, 'show'])->name('show');
-        Route::put('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
+        Route::post('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
         Route::delete('/{myCardLink}', [MyCardLinkController::class, 'destroy'])->name('destroy');
     });
 
