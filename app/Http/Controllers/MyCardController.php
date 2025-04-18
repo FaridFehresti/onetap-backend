@@ -61,7 +61,10 @@ class MyCardController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('avatars'), $fileName);
+            $data['avatar'] = 'avatars/' . $fileName;
         }
 
         $data['uuid'] = Str::uuid();
@@ -93,10 +96,14 @@ class MyCardController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            if ($myCard->avatar) {
-                Storage::disk('public')->delete($myCard->avatar);
+            if ($myCard->avatar && file_exists(public_path($myCard->avatar))) {
+                unlink(public_path($myCard->avatar));
             }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('avatars'), $fileName);
+            $data['avatar'] = 'avatars/' . $fileName;
         }
 
         $myCard->update($data);

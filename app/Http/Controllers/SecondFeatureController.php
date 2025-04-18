@@ -56,8 +56,14 @@ class SecondFeatureController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($secondFeature->image);
-            $data['image'] = $request->file('image')->store('second_features', 'public');
+            if ($secondFeature->image && file_exists(public_path($secondFeature->image))) {
+                unlink(public_path($secondFeature->image));
+            }
+
+            $file = $request->file('image');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('second_features'), $fileName);
+            $data['image'] = 'second_features/' . $fileName;
         }
 
         $secondFeature->update($data);

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\ImageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Step;
 use Illuminate\Http\Request;
@@ -29,7 +28,10 @@ class StepController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image'] = ImageHelper::handleImageUpload($request->file('image'), null, '/cms/steps');
+            $file = $request->file('image');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('cms/steps'), $fileName);
+            $data['image'] = 'cms/steps/' . $fileName;
         }
 
         $step = Step::create($data);
@@ -62,7 +64,10 @@ class StepController extends Controller
                 unlink(public_path($step->image));
             }
 
-            $data['image'] = ImageHelper::handleImageUpload($request->file('image'), null, '/cms/steps');
+            $file = $request->file('image');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('cms/steps'), $fileName);
+            $data['image'] = 'cms/steps/' . $fileName;
         }
 
         $step->update($data);
@@ -87,4 +92,3 @@ class StepController extends Controller
         ]);
     }
 }
-

@@ -30,6 +30,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'secret_token' => 'required|string',
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
@@ -40,7 +41,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-
         $secretToken = SecretToken::where('token', $request->input('secret_token'))->first();
 
         if (!$secretToken) {
@@ -50,8 +50,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-
-        $user = User::find($secretToken->user_id);
+        $user = User::where('email', $request->input('email'))->first();
 
         if (!$user) {
             return response()->json([
@@ -60,6 +59,13 @@ class AuthController extends Controller
             ], 404);
         }
 
+
+        if ($secretToken->user_id !== $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Secret token does not belong to this user',
+            ], 401);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
