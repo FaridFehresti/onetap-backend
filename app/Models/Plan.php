@@ -20,4 +20,10 @@ class Plan extends Model
         'best_plan' => 'boolean',
         'price' => 'decimal:2',
     ];
+
+    public function planFeatures()
+    {
+        return $this->hasMany(PlanFeature::class, 'plan_id');
+    }
+
 }

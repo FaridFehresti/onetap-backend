@@ -10,7 +10,7 @@ class PlanController extends Controller
 {
     public function index()
     {
-        $plans = Plan::orderByDesc('id')->get();
+        $plans = Plan::with('planFeatures')->orderByDesc('id')->get();
 
         return response()->json([
             'status' => 'success',
@@ -37,6 +37,8 @@ class PlanController extends Controller
 
     public function show(Plan $plan)
     {
+        $plan->load('planFeatures');
+
         return response()->json([
             'status' => 'success',
             'data' => $plan,

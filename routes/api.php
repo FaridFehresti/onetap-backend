@@ -10,6 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\EmailController;
@@ -140,6 +141,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    Route::prefix('plan_features')->name('plan_features.')->group(function () {
+        Route::get('/', [PlanFeatureController::class, 'index'])->name('index');
+        Route::post('/', [PlanFeatureController::class, 'store'])->name('store');
+        Route::get('/{planFeature}', [PlanFeatureController::class, 'show'])->name('show');
+        Route::post('/{planFeature}', [PlanFeatureController::class, 'update'])->name('update');
+        Route::delete('/{planFeature}', [PlanFeatureController::class, 'destroy'])->name('destroy');
+    });
+
+
 
     Route::prefix('go_green')->name('go_green.')->group(function () {
         Route::get('/', [GoGreenController::class, 'index'])->name('index');
@@ -231,6 +241,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     });
+
+
+
 
 });
 
