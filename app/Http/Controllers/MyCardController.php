@@ -13,7 +13,8 @@ class MyCardController extends Controller
 {
     public function index()
     {
-        $cards = MyCard::get();
+        $user = auth()->user();
+        $cards = MyCard::where('user_id', $user->id)->get();
 
         return response()->json([
             'status' => 'success',
@@ -21,13 +22,25 @@ class MyCardController extends Controller
         ]);
     }
 
+
     public function show(MyCard $myCard)
     {
+        $user = auth()->user();
+
+        if ($myCard->user_id !== $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access to this card.',
+            ], 403);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $myCard,
         ]);
     }
+
+
 
     public function store(Request $request)
     {

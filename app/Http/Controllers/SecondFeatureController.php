@@ -24,7 +24,11 @@ class SecondFeatureController extends Controller
             'image' => 'required|image',
         ]);
 
-        $data['image'] = $request->file('image')->store('second_features', 'public');
+        $image = $request->file('image');
+        $filename = time() . '_' . $image->getClientOriginalName();
+        $image->move(public_path('second_features'), $filename);
+        $data['image'] = 'second_features/' . $filename;
+
 
         $item = SecondFeature::create($data);
 
