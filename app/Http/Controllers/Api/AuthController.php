@@ -14,6 +14,7 @@ use App\Models\SecretToken;
 use App\Models\Subscription;
 use App\Models\CartItems;
 use App\Models\User;
+use App\Models\UserLog;
 use App\Traits\apiresponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -59,7 +60,6 @@ class AuthController extends Controller
             ], 404);
         }
 
-
         if ($secretToken->user_id !== $user->id) {
             return response()->json([
                 'status' => 'error',
@@ -69,6 +69,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+
+        UserLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'login',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ]);
+
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -76,18 +84,6 @@ class AuthController extends Controller
             'message' => 'Login successful',
         ]);
     }
-
-    // public function test(Request $request)
-    // {
-
-    //     $cms = C_M_S::create([
-    //         'type' => 'land_second',
-    //         'first_desc' => json_encode($request->all()), // Encode all request data into JSON for the 'index' field
-    //     ]);
-
-    //     return response()->json(['message' => 'Data saved successfully', 'data' => $cms]);
-    // }
-
 
     public function register(Request $request)
     {
@@ -105,16 +101,21 @@ class AuthController extends Controller
             ], 422);
         }
 
-
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
 
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
+
+        UserLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'login',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ]);
 
         if ($request->has('cart') && is_array($request->cart)) {
             $cart = Cart::firstOrCreate(
@@ -142,8 +143,6 @@ class AuthController extends Controller
             'token' => $token,
         ]);
     }
-
-
 
     public function login(Request $request)
     {
@@ -160,17 +159,21 @@ class AuthController extends Controller
             ], 422);
         }
 
-
         $user = User::where('email', $request->input('email'))->first();
-
 
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             return $this->error([], 'Invalid credentials', 401);
         }
 
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
+
+        UserLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'login',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ]);
 
         if ($request->has('cart') && is_array($request->cart)) {
             $cart = Cart::firstOrCreate(
@@ -198,8 +201,6 @@ class AuthController extends Controller
             'token' => $token,
         ]);
     }
-
-
 
     public function check(Request $request)
     {
@@ -218,8 +219,6 @@ class AuthController extends Controller
             $lastPayment = $order->payments()->latest()->first();
 
             $paymentStatus = $lastPayment ? $lastPayment->status : 'pending';
-            // Fetch the latest subscription
-
 
             return response()->json([
                 'status' => 'success',
@@ -230,7 +229,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // No orders for this user
         return response()->json([
             'status' => 'error',
             'message' => 'User has no orders',
@@ -239,7 +237,6 @@ class AuthController extends Controller
             'payment_status' => 'pending',
         ]);
     }
-
 
     public function checkOtp(OtpRequest $request)
     {
@@ -263,9 +260,6 @@ class AuthController extends Controller
             ], 404);
         }
         if (strval($user->otp) === strval($otp)) {
-            // $user->otp = null;
-            // $user->save();
-
             return response()->json([
                 'status' => true,
                 'message' => 'OTP verified successfully',
@@ -296,7 +290,6 @@ class AuthController extends Controller
                 ]);
             }
 
-            // Generate OTP
             $otp = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $user->otp = $otp;
 
@@ -310,14 +303,12 @@ class AuthController extends Controller
 
             try {
                 Mail::to($user->email)->send(new OtpMail($otp));
-
-                // If email sent successfully, commit transaction
                 DB::commit();
 
                 return response()->json([
                     'status' => true,
                     'message' => 'OTP sent successfully',
-                    'otp' => $otp, // ✅ نمایش OTP (فقط برای تست)
+                    'otp' => $otp, // ✅ For testing only
                 ], 200);
             } catch (\Exception $mailException) {
                 DB::rollback();
@@ -334,8 +325,6 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
-
 
     public function passwordUpdate(PasswordUpdateRequest $request)
     {
@@ -381,9 +370,17 @@ class AuthController extends Controller
         }
     }
 
-    //logout functions
     public function logout(Request $request)
     {
+        $user = $request->user();
+
+        UserLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'logout',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ]);
+
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -392,13 +389,18 @@ class AuthController extends Controller
         ]);
     }
 
-
     public function deleteAccount(Request $request)
     {
         $user = $request->user();
 
-        $user->tokens()->delete();
+        UserLog::create([
+            'user_id' => $user->id,
+            'activity_type' => 'account_deletion',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+        ]);
 
+        $user->tokens()->delete();
         $user->delete();
 
         return response()->json([
@@ -424,22 +426,19 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Handle image upload if there is an avatar
         $imagePath = null;
         if ($request->hasFile('avatar')) {
             $imagePath = ImageHelper::handleImageUpload($request->file('avatar'), null, 'avatar');
         }
 
-        // Find the authenticated user
         $user = User::find(auth()->user()->id);
 
-        // Update user details
-        $user->name = $request->name ?? $user->name; // Only update if provided
-        $user->email = $request->email ?? $user->email; // Only update if provided
-        $user->avartar = $imagePath ?? $user->avatar; // Only update avatar if provided
-        $user->occipation = $request->occupation ?? $user->occipation; // Only update if provided
+        $user->name = $request->name ?? $user->name;
+        $user->email = $request->email ?? $user->email;
+        $user->avatar = $imagePath ?? $user->avatar;
+        $user->occupation = $request->occupation ?? $user->occupation;
         $user->save();
 
-        return $this->success($user,'Information Update Successfully!',200);
+        return $this->success($user, 'Information Update Successfully!', 200);
     }
 }

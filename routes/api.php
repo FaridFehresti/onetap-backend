@@ -10,7 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FaqController;
@@ -221,6 +221,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{myCardLink}', [MyCardLinkController::class, 'show'])->name('show');
         Route::post('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
         Route::delete('/{myCardLink}', [MyCardLinkController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}', [UserController::class, 'show'])->name('show');
+        Route::post('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
     });
 
 });
