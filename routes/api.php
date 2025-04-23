@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Api\ActionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\BrandlogoController;
@@ -10,7 +11,12 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PlanFeatureController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\EmailController;
@@ -125,7 +131,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('brand_logos')->name('brand_logos.')->group(function () {
         Route::get('/', [BrandlogoController::class, 'index'])->name('index');
         Route::post('/', [BrandlogoController::class, 'store'])->name('store');
-        Route::get('/{brandlogo}', [BrandlogoController::class, 'show'])->name('show');
+        Route::get('/{brandLogo}', [BrandlogoController::class, 'show'])->name('show');
         Route::post('/{brandlogo}', [BrandlogoController::class, 'update'])->name('update');
         Route::delete('/{brandlogo}', [BrandlogoController::class, 'destroy'])->name('destroy');
         Route::post('/status/{brandlogo}', [BrandlogoController::class, 'status'])->name('status');
@@ -243,6 +249,53 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    Route::prefix('features')->name('features.')->group(function () {
+        Route::get('/', [FeatureController::class, 'index'])->name('index');
+        Route::post('/', [FeatureController::class, 'store'])->name('store');
+        Route::get('/{feature}', [FeatureController::class, 'show'])->name('show');
+        Route::post('/{feature}', [FeatureController::class, 'update'])->name('update');
+        Route::delete('/{feature}', [FeatureController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('product_categories')->name('product_categories.')->group(function () {
+        Route::get('/', [ProductCategoryController::class, 'index'])->name('index');
+        Route::post('/', [ProductCategoryController::class, 'store'])->name('store');
+        Route::get('/{productCategory}', [ProductCategoryController::class, 'show'])->name('show');
+        Route::post('/{productCategory}', [ProductCategoryController::class, 'update'])->name('update');
+        Route::delete('/{productCategory}', [ProductCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('tags')->name('tags.')->group(function () {
+        Route::get('/', [TagController::class, 'index'])->name('index');
+        Route::post('/', [TagController::class, 'store'])->name('store');
+        Route::get('/{tag}', [TagController::class, 'show'])->name('show');
+        Route::post('/{tag}', [TagController::class, 'update'])->name('update');
+        Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('images')->name('images.')->group(function () {
+        Route::get('/', [ImageController::class, 'index'])->name('index');
+        Route::post('/', [ImageController::class, 'store'])->name('store');
+        Route::get('/{image}', [ImageController::class, 'show'])->name('show');
+        Route::post('/{image}', [ImageController::class, 'update'])->name('update');
+        Route::delete('/{image}', [ImageController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('addresses')->name('addresses.')->group(function () {
+        Route::get('/', [AddressController::class, 'index'])->name('index');
+        Route::post('/', [AddressController::class, 'store'])->name('store');
+        Route::get('/{address}', [AddressController::class, 'show'])->name('show');
+        Route::post('/{address}', [AddressController::class, 'update'])->name('update');
+        Route::delete('/{address}', [AddressController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::post('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    });
 
 
 });

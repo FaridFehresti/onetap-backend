@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Features extends Model
+class ProductCategory extends Model
 {
     use HasFactory;
-    protected $guarded = [];
 
-    public function getImageAttribute($value)
+    protected $fillable = ['title'];
+
+    public function products()
     {
-        return $value ? url($value) : null;
+        return $this->hasMany(Product::class);
     }
 }
