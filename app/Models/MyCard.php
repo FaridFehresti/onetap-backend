@@ -24,6 +24,7 @@ class MyCard extends Model
         'status',
         'user_id',
         'uuid',
+        'text_color'
     ];
 
 

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('company_number')->nullable();
             $table->integer('postal_code')->nullable();
             $table->string('color')->nullable();
+            $table->string('text_color')->nullable();
             $table->string('avatar')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
