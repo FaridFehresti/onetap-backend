@@ -43,7 +43,7 @@ class MyCardController extends Controller
 
 
 
-    use Illuminate\Support\Facades\Log;
+
 
     public function store(Request $request)
     {
