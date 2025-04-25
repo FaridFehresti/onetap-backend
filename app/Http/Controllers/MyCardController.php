@@ -6,6 +6,7 @@ use App\Models\MyCard;
 use App\Models\MyCardLink;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -42,41 +43,67 @@ class MyCardController extends Controller
 
 
 
+    use Illuminate\Support\Facades\Log;
+
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'nullable|email',
-            'phone_number' => 'nullable|string',
-            'address' => 'nullable|string',
-            'company' => 'nullable|string',
-            'company_number' => 'nullable|string',
-            'postal_code' => 'nullable|integer',
-            'color' => 'nullable|string',
-            'text_color'=>'nullable|string',
-            'avatar'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'status' => 'in:active,inactive',
-            'user_id' => 'required|exists:users,id',
-        ]);
+        Log::info('Storing card data', ['request_data' => $request->all()]);
 
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('avatars'), $fileName);
-            $data['avatar'] = 'avatars/' . $fileName;
+        try {
+            $data = $request->validate([
+                'title' => 'required|string',
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'email' => 'nullable|email',
+                'phone_number' => 'nullable|string',
+                'address' => 'nullable|string',
+                'company' => 'nullable|string',
+                'company_number' => 'nullable|string',
+                'postal_code' => 'nullable|integer',
+                'color' => 'nullable|string',
+                'text_color' => 'nullable|string',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'status' => 'in:active,inactive',
+                'user_id' => 'required|exists:users,id',
+            ]);
+
+            Log::info('Validation passed', ['validated_data' => $data]);
+
+            if ($request->hasFile('avatar')) {
+                Log::info('Avatar file received', ['file_name' => $request->file('avatar')->getClientOriginalName()]);
+                $file = $request->file('avatar');
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('avatars'), $fileName);
+                $data['avatar'] = 'avatars/' . $fileName;
+            } else {
+                Log::info('No avatar file received');
+            }
+
+            $data['uuid'] = Str::uuid();
+
+            Log::info('Creating new card', ['data_to_create' => $data]);
+
+            $card = MyCard::create($data);
+
+            Log::info('Card created successfully', ['created_card' => $card]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $card,
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Error occurred while storing card', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while storing the card.',
+            ], 500);
         }
-
-        $data['uuid'] = Str::uuid();
-
-        $card = MyCard::create($data);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $card,
-        ], 201);
     }
+
 
     public function update(Request $request, MyCard $myCard)
     {
