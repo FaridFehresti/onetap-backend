@@ -48,12 +48,11 @@ class MyCardController extends Controller
 
     public function store(Request $request)
     {
-        try {
             $data = $request->validate([
                 'title' => 'required|string',
                 'first_name' => 'required|string',
                 'last_name' => 'required|string',
-                'email' => 'nullable|email',
+                'email' => 'nullable|string',
                 'phone_number' => 'nullable|string',
                 'address' => 'nullable|string',
                 'company' => 'nullable|string',
@@ -83,12 +82,6 @@ class MyCardController extends Controller
                 'status' => 'success',
                 'data' => $card,
             ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'An error occurred while storing the card.',
-            ], 500);
-        }
     }
 
     public function update(Request $request, MyCard $myCard)
@@ -97,7 +90,7 @@ class MyCardController extends Controller
             'title' => 'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'nullable|email',
+            'email' => 'nullable|string',
             'phone_number' => 'nullable|string',
             'address' => 'nullable|string',
             'company' => 'nullable|string',
@@ -107,8 +100,9 @@ class MyCardController extends Controller
             'text_color'=>'nullable|string',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:active,inactive',
-            'user_id' => 'required|exists:users,id',
         ]);
+
+        $data['user_id'] = Auth::id();
 
         if ($request->hasFile('avatar')) {
             if ($myCard->avatar && file_exists(public_path($myCard->avatar))) {
