@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
@@ -43,6 +44,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login_with_secret_token', [AuthController::class, 'loginWithSecretToken']);
+Route::post('login_with_email_and_password', [AuthController::class, 'loginWithEmailAndPassword']);
 
 
 // Cms Route
@@ -233,6 +235,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('my_card_links')->name('my_card_links.')->group(function () {
         Route::get('/', [MyCardLinkController::class, 'index'])->name('index');
+        Route::get('/all', [MyCardLinkController::class, 'listAll'])->name('listAll');
         Route::post('/', [MyCardLinkController::class, 'store'])->name('store');
         Route::get('/{myCardLink}', [MyCardLinkController::class, 'show'])->name('show');
         Route::post('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
@@ -296,6 +299,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{product}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
     });
+
+    Route::post('/payment/pay', [PaymentController::class, 'pay'])->name('payment.pay');
+    Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    Route::post('/payment/stripe/webhook', [PaymentController::class, 'stripeWebhook'])->name('payment.stripe.webhook');
+
 
 
 });
