@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class MyCardController extends Controller
 {
@@ -47,43 +48,60 @@ class MyCardController extends Controller
 
 
 
-    public function store(Request $request)
-    {
-            $data = $request->validate([
-                'title' => 'required|string',
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
-                'email' => 'nullable|string',
-                'phone_number' => 'nullable|string',
-                'address' => 'nullable|string',
-                'company' => 'nullable|string',
-                'company_number' => 'nullable|string',
-                'postal_code' => 'nullable|integer',
-                'color' => 'nullable|string',
-                'text_color' => 'nullable|string',
-                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'status' => 'in:active,inactive',
-            ]);
 
+public function store(Request $request)
+{
+    try {
+        Log::info('Creating card with data: ', $request->all());
 
-            $data['user_id'] = Auth::id();
+        $data = $request->validate([
+            'title' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'email' => 'nullable|string',
+            'phone_number' => 'nullable|string',
+            'address' => 'nullable|string',
+            'company' => 'nullable|string',
+            'company_number' => 'nullable|string',
+            'postal_code' => 'nullable|integer',
+            'color' => 'nullable|string',
+            'text_color' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'in:active,inactive',
+        ]);
 
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
-                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('avatars'), $fileName);
-                $data['avatar'] = 'avatars/' . $fileName;
-            }
+        $data['user_id'] = Auth::id();
 
-            $data['uuid'] = Str::uuid();
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('avatars'), $fileName);
+            $data['avatar'] = 'avatars/' . $fileName;
+        }
 
-            $card = MyCard::create($data);
+        $data['uuid'] = Str::uuid();
 
-            return response()->json([
-                'status' => 'success',
-                'data' => $card,
-            ], 201);
+        $card = MyCard::create($data);
+
+        Log::info('Card created successfully: ', ['card_id' => $card->id]);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $card,
+        ], 201);
+    } catch (\Exception $e) {
+        Log::error('Error creating card: ' . $e->getMessage(), [
+            'error' => $e,
+            'data' => $request->all(),
+        ]);
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'An error occurred while creating the card.',
+        ], 500);
     }
+}
+
 
     public function update(Request $request, MyCard $myCard)
     {
