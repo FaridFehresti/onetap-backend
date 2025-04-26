@@ -27,6 +27,19 @@ class MyCardLinkController extends Controller
         ]);
     }
 
+    public function listAll(Request $request)
+    {
+        $card_id = $request->input('card_id');
+
+        $links = MyCardLink::where('card_id', $card_id)->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $links,
+        ]);
+    }
+
+
     public function store(Request $request)
     {
         $data = $request->validate([
