@@ -45,6 +45,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login_with_secret_token', [AuthController::class, 'loginWithSecretToken']);
 Route::post('login_with_email_and_password', [AuthController::class, 'loginWithEmailAndPassword']);
+Route::get('my_cards/active_link/{uuid}', [MyCardController::class, 'getActiveLinkByUuid'])->name('activeLink');
 
 
 // Cms Route
@@ -230,7 +231,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{myCard}', [MyCardController::class, 'show'])->name('show');
         Route::post('/{myCard}', [MyCardController::class, 'update'])->name('update');
         Route::delete('/{myCard}', [MyCardController::class, 'destroy'])->name('destroy');
-        Route::get('/active_link/{uuid}', [MyCardController::class, 'getActiveLinkByUuid'])->name('activeLink');
+
     });
 
     Route::prefix('my_card_links')->name('my_card_links.')->group(function () {
