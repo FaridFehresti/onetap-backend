@@ -16,7 +16,7 @@ class MyCardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $cards = MyCard::where('user_id', $user->id)->get();
+        $cards = MyCard::where('user_id', $user->id)->with('links')->get();
 
         return response()->json([
             'status' => 'success',
@@ -36,6 +36,7 @@ class MyCardController extends Controller
             ], 403);
         }
 
+        $myCard ->load('links');
         return response()->json([
             'status' => 'success',
             'data' => $myCard,
@@ -58,8 +59,8 @@ class MyCardController extends Controller
                 'company' => 'nullable|string',
                 'company_number' => 'nullable|string',
                 'postal_code' => 'nullable|integer',
-                'color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
-                'text_color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
+                'color' => 'nullable|string',
+                'text_color' => 'nullable|string',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'status' => 'in:active,inactive',
             ]);
@@ -96,8 +97,8 @@ class MyCardController extends Controller
             'company' => 'nullable|string',
             'company_number' => 'nullable|string',
             'postal_code' => 'nullable|integer',
-            'color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
-            'text_color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
+            'color' => 'nullable|string',
+            'text_color' => 'nullable|string',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:active,inactive',
         ]);
