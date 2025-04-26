@@ -58,8 +58,8 @@ class MyCardController extends Controller
                 'company' => 'nullable|string',
                 'company_number' => 'nullable|string',
                 'postal_code' => 'nullable|integer',
-                'color' => 'nullable|string',
-                'text_color' => 'nullable|string',
+                'color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
+                'text_color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'status' => 'in:active,inactive',
             ]);
@@ -96,8 +96,8 @@ class MyCardController extends Controller
             'company' => 'nullable|string',
             'company_number' => 'nullable|string',
             'postal_code' => 'nullable|integer',
-            'color' => 'nullable|string',
-            'text_color'=>'nullable|string',
+            'color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
+            'text_color' => ['nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'in:active,inactive',
         ]);
