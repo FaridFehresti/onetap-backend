@@ -32,6 +32,11 @@ class User extends Authenticatable
     ];
 
 
+    public function myCards()
+    {
+        return $this->hasMany(MyCard::class, 'user_id', 'id');
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class, 'user_id');

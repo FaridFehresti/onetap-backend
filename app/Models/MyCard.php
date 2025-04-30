@@ -11,26 +11,21 @@ class MyCard extends Model
 
     protected $fillable = [
         'title',
-        'first_name',
-        'last_name',
-        'email',
-        'phone_number',
-        'address',
-        'company',
-        'company_number',
-        'postal_code',
-        'color',
-        'avatar',
-        'status',
+        'template_id',
+        'total_scans',
+        'qrcode_image',
         'user_id',
         'uuid',
-        'text_color'
     ];
-
 
     public function links()
     {
         return $this->hasMany(MyCardLink::class, 'card_id', 'id');
+    }
+
+    public function actions()
+    {
+        return $this->hasMany(Action::class, 'card_id', 'id');
     }
 
     public function user()

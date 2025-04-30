@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ActionImageController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\Api\ActionController;
+use App\Http\Controllers\ActionController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BrandlogoController;
 use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\CartController;
@@ -11,12 +13,14 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Api\QrcodeController;
 use App\Http\Controllers\Api\StripeController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\EducationController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ColorController;
@@ -34,6 +38,7 @@ use App\Http\Controllers\SecondFeatureController;
 use App\Http\Controllers\SecretTokenController;
 use App\Http\Controllers\StepController;
 use App\Http\Controllers\Web\Backend\CMSController;
+use App\Http\Controllers\WorkExperienceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +50,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login_with_secret_token', [AuthController::class, 'loginWithSecretToken']);
 Route::post('login_with_email_and_password', [AuthController::class, 'loginWithEmailAndPassword']);
-Route::get('my_cards/active_link/{uuid}', [MyCardController::class, 'getActiveLinkByUuid'])->name('activeLink');
+Route::get('my_cards/active_action/{uuid}', [MyCardController::class, 'getActiveActionByUuid'])->name('getActiveActionByUuid');
 
 
 // Cms Route
@@ -241,6 +246,56 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{myCardLink}', [MyCardLinkController::class, 'show'])->name('show');
         Route::post('/{myCardLink}', [MyCardLinkController::class, 'update'])->name('update');
         Route::delete('/{myCardLink}', [MyCardLinkController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('actions')->name('actions.')->group(function () {
+        Route::get('/', [ActionController::class, 'index'])->name('index');
+        Route::post('/', [ActionController::class, 'store'])->name('store');
+        Route::get('/{action}', [ActionController::class, 'show'])->name('show');
+        Route::post('/{action}', [ActionController::class, 'update'])->name('update');
+        Route::delete('/{action}', [ActionController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('social_links')->name('social_links.')->group(function () {
+        Route::get('/', [SocialLinkController::class, 'index'])->name('index');
+        Route::post('/', [SocialLinkController::class, 'store'])->name('store');
+        Route::get('/{socialLink}', [SocialLinkController::class, 'show'])->name('show');
+        Route::post('/{socialLink}', [SocialLinkController::class, 'update'])->name('update');
+        Route::delete('/{socialLink}', [SocialLinkController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::prefix('work_experiences')->name('work_experiences.')->group(function () {
+        Route::get('/', [WorkExperienceController::class, 'index'])->name('index');
+        Route::post('/', [WorkExperienceController::class, 'store'])->name('store');
+        Route::get('/{workExperience}', [WorkExperienceController::class, 'show'])->name('show');
+        Route::post('/{workExperience}', [WorkExperienceController::class, 'update'])->name('update');
+        Route::delete('/{workExperience}', [WorkExperienceController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::prefix('educations')->name('educations.')->group(function () {
+        Route::get('/', [EducationController::class, 'index'])->name('index');
+        Route::post('/', [EducationController::class, 'store'])->name('store');
+        Route::get('/{education}', [EducationController::class, 'show'])->name('show');
+        Route::post('/{education}', [EducationController::class, 'update'])->name('update');
+        Route::delete('/{education}', [EducationController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('awards')->name('awards.')->group(function () {
+        Route::get('/', [AwardController::class, 'index'])->name('index');
+        Route::post('/', [AwardController::class, 'store'])->name('store');
+        Route::get('/{award}', [AwardController::class, 'show'])->name('show');
+        Route::post('/{award}', [AwardController::class, 'update'])->name('update');
+        Route::delete('/{award}', [AwardController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('action_images')->name('action_images.')->group(function () {
+        Route::get('/', [ActionImageController::class, 'index'])->name('index');
+        Route::post('/', [ActionImageController::class, 'store'])->name('store');
+        Route::get('/{actionImage}', [ActionImageController::class, 'show'])->name('show');
+        Route::post('/{actionImage}', [ActionImageController::class, 'update'])->name('update');
+        Route::delete('/{actionImage}', [ActionImageController::class, 'destroy'])->name('destroy');
     });
 
 

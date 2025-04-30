@@ -62,7 +62,7 @@ Route::middleware(['auth','verified'])->group(function () {
         Route::post('/firstSections', 'second_section')->name('cms.second_section');
         Route::post('/thirdSections', 'third_section')->name('cms.third_section');
         Route::post('/fourSections', 'four_section')->name('cms.four_section');
-        Route::post('/Features', 'features')->name('cms.features');
+        Route::post('/Feature', 'features')->name('cms.features');
         Route::post('/footer', 'footer')->name('cms.footer');
 
 
