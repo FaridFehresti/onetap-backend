@@ -10,7 +10,12 @@ class ActionController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $actions = Action::with(['images', 'socialLinks', 'workExperiences', 'educations', 'awards'])->get();
+
+        foreach ($actions as $action) {
+            $action->increment('scan_count');
+        }
 
         return response()->json([
             'status' => 'success',
@@ -20,6 +25,10 @@ class ActionController extends Controller
 
     public function show(Action $action)
     {
+        $user = auth()->user();
+
+        $action->increment('scan_count');
+
         $action->load(['images', 'socialLinks', 'workExperiences', 'educations', 'awards']);
 
         return response()->json([
@@ -31,6 +40,12 @@ class ActionController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateAction($request);
+
+        if ($data['status'] === 'active') {
+            Action::where('card_id', $data['card_id'])
+                ->where('status', 'active')
+                ->update(['status' => 'inactive']);
+        }
 
         if ($request->hasFile('avatar')) {
             $avatar = $request->file('avatar');
@@ -52,6 +67,13 @@ class ActionController extends Controller
     public function update(Request $request, Action $action)
     {
         $data = $this->validateAction($request);
+
+        if ($data['status'] === 'active') {
+            Action::where('card_id', $data['card_id'])
+                ->where('status', 'active')
+                ->where('id', '!=', $action->id)
+                ->update(['status' => 'inactive']);
+        }
 
         if ($request->hasFile('avatar')) {
             if ($action->avatar && file_exists(public_path($action->avatar))) {
@@ -86,6 +108,7 @@ class ActionController extends Controller
         $action->workExperiences()->delete();
         $action->educations()->delete();
         $action->awards()->delete();
+        $action->skills()->delete();
 
         $action->delete();
 
@@ -197,6 +220,13 @@ class ActionController extends Controller
             $action->awards()->delete();
             foreach ($request->input('awards') as $award) {
                 $action->awards()->create($award);
+            }
+        }
+
+        if ($request->has('skills')) {
+            $action->skills()->delete();
+            foreach ($request->input('skills') as $skill) {
+                $action->skills()->create($skill);
             }
         }
     }

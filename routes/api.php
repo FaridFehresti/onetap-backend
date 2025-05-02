@@ -4,6 +4,7 @@ use App\Http\Controllers\ActionImageController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\BrandlogoController;
 use App\Http\Controllers\Api\CardController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SkillController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
@@ -298,6 +300,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{actionImage}', [ActionImageController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('skills')->name('skills.')->group(function () {
+        Route::get('/', [SkillController::class, 'index'])->name('index');
+        Route::post('/', [SkillController::class, 'store'])->name('store');
+        Route::get('/{skill}', [SkillController::class, 'show'])->name('show');
+        Route::post('/{skill}', [SkillController::class, 'update'])->name('update');
+        Route::delete('/{skill}', [SkillController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', [ReviewController::class, 'index'])->name('index');
+        Route::post('/', [ReviewController::class, 'store'])->name('store');
+        Route::get('/{review}', [ReviewController::class, 'show'])->name('show');
+        Route::post('/{review}', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');

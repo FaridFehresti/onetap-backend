@@ -13,6 +13,7 @@ class Product extends Model
         'type',
         'description',
         'colors',
+        'product_price',
         'product_category_id',
         'template_id',
         'address_id',
@@ -44,6 +45,11 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(Image::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 
 

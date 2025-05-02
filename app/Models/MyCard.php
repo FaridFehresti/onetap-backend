@@ -18,6 +18,8 @@ class MyCard extends Model
         'uuid',
     ];
 
+    protected $guarded = ['total_scans'];
+
     public function links()
     {
         return $this->hasMany(MyCardLink::class, 'card_id', 'id');
@@ -31,5 +33,14 @@ class MyCard extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function getTotalScansAttribute()
+    {
+        $actionsScans = $this->actions()->where('card_id', $this->id)->sum('scan_count');
+
+        $cardScans = $this->attributes['total_scans'] ?? 0;
+
+        return (int) ($cardScans + $actionsScans);
     }
 }

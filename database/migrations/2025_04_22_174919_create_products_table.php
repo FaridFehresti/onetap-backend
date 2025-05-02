@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->text('description')->nullable();
             $table->json('colors')->nullable();
+            $table->decimal('product_price', 10, 2)->nullable();
             $table->foreignId('product_category_id')->nullable()->constrained('product_categories')->cascadeOnDelete();
             $table->integer('template_id')->nullable();
             $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete();

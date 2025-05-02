@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web\Backend;
 
 use App\Helper\ImageHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Features;
+use App\Models\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
@@ -14,7 +14,7 @@ class FeaturesController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Features::latest();
+            $data = Feature::latest();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('image', function ($data) {
@@ -77,7 +77,7 @@ class FeaturesController extends Controller
                 $imagePath = null;
             }
 
-            $data = new Features();
+            $data = new Feature();
             $data->title = $request->input('title');
             $data->description = $request->input('description');
             $data->image = $imagePath;
@@ -97,7 +97,7 @@ class FeaturesController extends Controller
 
     public function edit(string $id)
     {
-        $data = Features::find($id);
+        $data = Feature::find($id);
         return view('backend.layout.cms.features.edit', get_defined_vars());
     }
 
@@ -112,7 +112,7 @@ class FeaturesController extends Controller
 
         try {
             // Find the existing feature by ID
-            $data = Features::findOrFail($id);
+            $data = Feature::findOrFail($id);
 
             // Handle image upload if there is a new image
             if ($request->hasFile('image')) {
@@ -142,7 +142,7 @@ class FeaturesController extends Controller
     public function destroy(string $id)
     {
         // Find the feature by ID
-        $data = Features::find($id);
+        $data = Feature::find($id);
 
         // Check if the feature exists
         if (!$data) {
@@ -164,7 +164,7 @@ class FeaturesController extends Controller
 
     public function status($id)
     {
-        $data = Features::where('id', $id)->first();
+        $data = Feature::where('id', $id)->first();
         if ($data->status == 'active') {
             // If the current status is active, change it to inactive
             $data->status = 'inactive';

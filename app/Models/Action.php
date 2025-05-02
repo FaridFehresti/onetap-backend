@@ -40,8 +40,11 @@ class Action extends Model
         'currency',
         'booking_link',
         'avatar',
-        'card_id'
+        'card_id',
+        'scan_count',
     ];
+
+    protected $guarded = ['scan_count'];
 
     public function card()
     {
@@ -71,5 +74,10 @@ class Action extends Model
     public function awards()
     {
         return $this->hasMany(Award::class);
+    }
+
+    public function skills()
+    {
+        return $this->hasMany(Skill::class);
     }
 }

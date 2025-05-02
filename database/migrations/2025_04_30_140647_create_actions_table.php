@@ -42,6 +42,7 @@ return new class extends Migration {
             $table->string('booking_link')->nullable();
             $table->string('avatar')->nullable();
             $table->foreignId('card_id')->constrained('my_cards')->cascadeOnDelete();
+            $table->unsignedBigInteger('scan_count')->default(0);
             $table->timestamps();
         });
     }

@@ -11,17 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('my_cards', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->integer('template_id');
-            $table->integer('total_scans')->default(0);
-            $table->string('qrcode_image')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->uuid('uuid')->unique()->nullable();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->integer('star');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
-
     }
 
     /**
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('my_cards');
+        Schema::dropIfExists('reviews');
     }
 };

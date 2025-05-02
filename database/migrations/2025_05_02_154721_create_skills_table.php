@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('skills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
-            $table->text('description');
-            $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->text('description')->nullable();
+            $table->string('logo')->nullable();
+            $table->unsignedInteger('percentage')->nullable();
+            $table->foreignId('action_id')->constrained('actions')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('skills');
     }
 };
